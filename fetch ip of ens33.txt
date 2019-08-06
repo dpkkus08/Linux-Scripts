@@ -1,0 +1,48 @@
+# ifconfig ens33 | grep inet
+        inet 192.168.2.131  netmask 255.255.255.0  broadcast 192.168.2.255
+        inet6 fe80::af5:2fd3:2ce1:7210  prefixlen 64  scopeid 0x20<link>
+
+# ifconfig ens33 | grep inet | awk '{print $2}'
+192.168.2.131
+fe80::af5:2fd3:2ce1:7210
+
+# ifconfig ens33 | grep inet | awk '{print $4}'
+255.255.255.0
+64
+
+# ifconfig ens33 | grep inet | awk '{print $6}'
+192.168.2.255
+0x20<link>
+
+
+************************************************************************
+
+# ifconfig ens33 | grep inet
+        inet 192.168.2.131  netmask 255.255.255.0  broadcast 192.168.2.255
+        inet6 fe80::af5:2fd3:2ce1:7210  prefixlen 64  scopeid 0x20<link>
+
+
+# ifconfig ens33 | grep inet | awk 'NR==1{print $2}'
+192.168.2.131
+
+# ifconfig ens33 | grep inet | awk 'NR==1{print $4}'
+255.255.255.0
+
+# ifconfig ens33 | grep inet | awk 'NR==1{print $6}'
+192.168.2.255
+
+************************************************************************
+
+# ifconfig ens33 | grep inet
+        inet 192.168.2.131  netmask 255.255.255.0  broadcast 192.168.2.255
+        inet6 fe80::af5:2fd3:2ce1:7210  prefixlen 64  scopeid 0x20<link>
+
+# ifconfig ens33 | grep inet | awk 'NR==2{print $2}'
+fe80::af5:2fd3:2ce1:7210
+
+# ifconfig ens33 | grep inet | awk 'NR==2{print $4}'
+64
+
+# ifconfig ens33 | grep inet | awk 'NR==2{print $6}'
+0x20<link>
+

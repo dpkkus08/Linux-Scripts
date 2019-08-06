@@ -1,0 +1,55 @@
+#!/bin/bash
+iptables -F
+systemctl stop firewalld
+setenforce 0
+eth=`nmcli device | awk '/ethernet/ {print $1}'` &> /dev/null
+ifup $eth &> /dev/null
+ip=`ifconfig $eth | grep netmask | awk '{print $2}'` &> /dev/null
+mkdir /media/cdrom
+mkdir /repo-files
+mount -t auto /dev/cdrom /media/cdrom &> /dev/null
+cd /etc/yum.repos.d
+mv * /repo-files
+touch cdrom.repo
+echo "[repo]" >> cdrom.repo
+echo "name = repo" >> cdrom.repo
+echo "baseurl = "file:///media/cdrom/"" >> cdrom.repo
+echo "gpgcheck = 0" >> cdrom.repo
+echo "enabled = 1" >> cdrom.repo
+yum clean all
+yum update all
+yum install http* -y
+
+echo "<virtualhost $ip>" >> /etc/httpd/conf/httpd.conf
+echo "serveradmin root@$ip" >> /etc/httpd/conf/httpd.conf
+echo "documentroot /var/www/html" >> /etc/httpd/conf/httpd.conf
+echo "directoryindex repo" >> /etc/httpd/conf/httpd.conf
+echo "<directory "/var/www/html">" >> /etc/httpd/conf/httpd.conf
+echo "options indexes" >> /etc/httpd/conf/httpd.conf
+echo "order allow,deny" >> /etc/httpd/conf/httpd.conf
+echo "allow from all" >> /etc/httpd/conf/httpd.conf
+echo "</directory>" >> /etc/httpd/conf/httpd.conf
+echo "</virtualhost>" >> /etc/httpd/conf/httpd.conf
+
+mkdir /var/www/html/repo
+mkdir /var/www/html/repo/Packages
+
+cd /media/cdrom/
+rsync -parv Packages/ /var/www/html/repo/Packages/
+createrepo -v /var/www/html/repo/Packages/
+
+cd /etc/yum.repos.d/
+mv * /repo-files
+
+touch http.repo
+echo "[httprepo]" >> http.repo
+echo "name = httprepo" >> http.repo
+echo "baseurl = "http://$ip/repo/Packages/"" >> http.repo
+echo "gpgcheck = 0" >> http.repo
+echo "enabled = 1" >> http.repo
+
+systemctl start httpd
+systemctl enable httpd &> /dev/null
+umount /media/cdrom &> /dev/null
+yum clean all
+yum update

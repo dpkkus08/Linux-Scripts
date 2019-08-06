@@ -1,0 +1,39 @@
+#!/bin/bash
+iptables -F
+systemctl stop firewalld
+setenforce 0
+eth=`nmcli device | awk '/ethernet/ {print $1}'` &> /dev/null
+ifup $eth &> /dev/null
+ip=`ifconfig $eth | grep netmask | awk '{print $2}'` &> /dev/null
+mkdir /media/cdrom
+mkdir /repo-files
+mount -t auto /dev/cdrom /media/cdrom &> /dev/null
+cd /etc/yum.repos.d
+mv * /repo-files
+touch local.repo
+echo "[repo]" >> local.repo
+echo "name = repo" >> local.repo
+echo "baseurl = "file:///media/cdrom/"" >> local.repo
+echo "gpgcheck = 0" >> local.repo
+echo "enabled = 1" >> local.repo
+yum clean all
+yum update all
+yum install http* -y
+yum install vsftpd* -y
+mkdir /var/ftp/repo
+cd /media/cdrom/Packages/
+cp -rv * /var/ftp/repo
+cd /var/ftp/repo
+createrepo -v .
+cd /etc/yum.repos.d/
+mv * /root/repo-files
+touch ftp.repo
+echo "[repo]" >> ftp.repo
+echo "name = repo" >> ftp.repo
+echo "baseurl = "ftp://$ip/repo"" >> ftp.repo
+echo "gpgcheck = 0" >> ftp.repo
+echo "enabled = 1" >> ftp.repo
+systemctl start vsftpd
+systemctl enable vsftpd &> /dev/null
+yum clean all
+yum update

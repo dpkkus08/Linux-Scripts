@@ -1,0 +1,8 @@
+#!/bin/bash
+iptables -F 
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -p tcp --destination-port 22 -j DROP
+iptables -A INPUT -p tcp -m tcp  --dport 22 --syn -j LOG --log-prefix "SSH CONNECTION:"

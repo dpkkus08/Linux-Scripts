@@ -1,0 +1,60 @@
+yum install dovecot
+
+Y/N
+y
+
+vi /etc/dovecot/dovecot.conf
+	line no 20 remove #  set protocols = imap pop3 lmtp
+vi /etc/dovecot/conf.d/10-mail.conf
+	line no 24 remove #  set mail_location = maildir:~/Maildir
+vi /etc/dovecot/conf.d/10-auth.conf
+	line no 9 remove #  set  disable_plaintest_auth = no
+    line no 97			set  auth_mechanisms = plain login
+vi /etc/dovecot/conf.d/10-master.conf
+	line no 82 remove # set mode = 0600	
+	line no 83 remove # set user = postfix
+	line no 84 remove # set group = postfix
+chkconfig dovecot on
+
+wget http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm  
+
+rpm -ivh epel-release-6-8.noarch.rpm
+
+yum install squirrelmail
+Y/N
+y
+Y/N
+y
+service httpd start
+chkconfig httpd on 
+cd /usr/share/squirrelmail/config
+./conf.pl
+	make changes in config
+	Command>>1
+	Change organization name
+	Change Proviider link
+	Change Provider Name
+	S to save
+	Command>>2
+	1 change domain name
+	S to save
+	Q to quit
+vi /etc/httpd/conf/httpd.conf
+	end of the file add the below line
+	
+	Alias /squirrelmail /usr/share/squirrelmail
+	<Directory /usr/share/squirrelmail>
+		Options Indexes FollowSymLinks
+		RewriteEngine On
+		AllowOverride All
+		DirectoryIndex index.php
+		Order allow,deny
+		Allow from all
+	</Directory>
+service httpd restart
+
+Check securitygetsebool
+
+getsebool httpd_can_network_connect
+
+set security setsebool httpd_can_network_connect=1

@@ -1,0 +1,27 @@
+#!/bin/bash
+yum install -y unbound
+
+sed -i 's|# interface: 0.0.0.0$|interface: 127.0.0.1|' /etc/unbound/unbound.conf
+sed -i 's|# hide-identity: no|hide-identity: yes|' /etc/unbound/unbound.conf
+sed -i 's|# hide-version: no|hide-version: yes|' /etc/unbound/unbound.conf
+sed -i 's|use-caps-for-id: no|use-caps-for-id: yes|' /etc/unbound/unbound.conf
+
+
+if pgrep systemd-journal; then
+  systemctl enable unbound
+  systemctl restart unbound
+else
+  service unbound restart
+fi
+
+chattr -i /etc/resolv.conf
+
+sed -i "s|nameserver|#nameserver|" /etc/resolv.conf
+sed -i "s|search|#search|" /etc/resolv.conf
+
+echo "nameserver 127.0.0.1" >> /etc/resolv.conf
+
+chattr +i /etc/resolv.conf
+
+echo "The installation is done."
+

@@ -1,0 +1,23 @@
+#!/bin/bash
+iptables -F
+systemctl stop firewalld
+setenforce 0
+eth=`nmcli device | awk '/ethernet/ {print $1}'` &> /dev/null
+ifup $eth &> /dev/null
+ip=`ifconfig $eth | grep netmask | awk '{print $2}'` &> /dev/null
+
+yum install http* -y
+
+hostname web1.cdac.com
+hostname=`hostname`
+echo "$ip $hostname" >> /etc/hosts
+echo "<virtualhost $ip>" >> /etc/httpd/conf/httpd.conf
+echo "serveradmin root@$ip" >> /etc/httpd/conf/httpd.conf
+echo "documentroot /var/www/html" >> /etc/httpd/conf/httpd.conf
+echo "directoryindex repo" >> /etc/httpd/conf/httpd.conf
+echo "<directory "/var/www/html">" >> /etc/httpd/conf/httpd.conf
+echo "options indexes" >> /etc/httpd/conf/httpd.conf
+echo "order allow,deny" >> /etc/httpd/conf/httpd.conf
+echo "allow from all" >> /etc/httpd/conf/httpd.conf
+echo "</directory>" >> /etc/httpd/conf/httpd.conf
+echo "</virtualhost>" >> /etc/httpd/conf/httpd.conf

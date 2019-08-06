@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#configuration of dhcp
+
+echo "enter default lease time (recomended 600 sec.)"
+read minlease
+
+echo "enter max lease time (recomended 7200 sec.)"
+read maxlease
+
+echo "enter network address"
+read ipnet
+
+echo "enter subnet mask"
+read subnetm
+
+echo "enter range of dhcp pool(starting ip ending ip)"
+read rangedhcp
+
+echo "enter router dhcp"
+read routerip
+
+echo "enter domain name server ip address"
+read dnsip
+
+
+echo "default-lease-time $minlease" >> /etc/dhcp/dhcpd.conf
+echo "max-lease-time $maxlease" >> /etc/dhcp/dhcpd.conf
+echo "subnet $ipnet netmask $subnetm {" >> /etc/dhcp/dhcpd.conf
+echo "range $range dhcp ;" >> /etc/dhcp/dhcpd.conf
+echo "option routers $routerip ;" >> /etc/dhcp/dhcpd.conf
+echo "option domain-name-server $dnsip ;" >> /etc/dhcp/dhcpd.conf
+echo "}" >> /etc/dhcp/dhcpd.conf

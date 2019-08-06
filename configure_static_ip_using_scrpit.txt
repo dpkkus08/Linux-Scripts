@@ -1,0 +1,22 @@
+#!/bin/bash
+eth=`nmcli device | awk '/ethernet/ {print $1}'` &> /dev/null
+
+sed -i 's/dhcp/none/g' /etc/sysconfig/network-scripts/ifcfg-$eth &> /dev/null
+sed -i 's/ONBOOT=no/ONBOOT=yes/g' /etc/sysconfig/network-scripts/ifcfg-$eth &> /dev/null
+
+read -p "Enter Your IP: "  ip
+read -p "Enter Your Netmask: "  netmask
+read -p "Enter Your Gateway: "  gateway
+read -p "Enter Your DNS1: "  dns1
+read -p "Enter Your DNS2: "  dns2
+
+echo "IPADDR=$ip" >> /etc/sysconfig/network-scripts/ifcfg-$eth
+echo "NETMASK=$netmask" >> /etc/sysconfig/network-scripts/ifcfg-$eth
+echo "GATEWAY=$gateway" >> /etc/sysconfig/network-scripts/ifcfg-$eth
+echo "DNS1=$dns1" >> /etc/sysconfig/network-scripts/ifcfg-$eth
+echo "DNS2=$dns2" >> /etc/sysconfig/network-scripts/ifcfg-$eth
+
+ifup $eth &> /dev/null
+systemctl restart NetworkManager
+systemctl restart network
+echo "ifconfig $eth"

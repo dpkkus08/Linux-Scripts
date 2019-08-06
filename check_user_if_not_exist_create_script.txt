@@ -1,0 +1,11 @@
+#!/bin/bash
+read -p "Enter the username:"  user
+check=`id -u $user 2> /dev/null`
+if  [ -z "$check" ]
+then
+        echo "no such user"
+        echo "adding the user...."
+        useradd $user
+else
+        echo "User exist with UID: $check"
+fi

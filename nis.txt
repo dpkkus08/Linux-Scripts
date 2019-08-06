@@ -1,0 +1,93 @@
+nisdomainname abc.com
+vim /etc/sysconfig/network
+cd /var/yp/
+ls
+Makefile
+vim Makefile
+
+line no 127 
+
+add passwd shadow group 
+and # (commant) others
+
+
+systemctl start ypserv
+systemctl start yppasswd
+chkconfig ypserv on
+
+/usr/lib64/yp/ypinit -m
+
+press control + D
+
+then Y
+
+cat ypservers
+
+
+now on client
+
+nisdomainname  abc.com
+
+vim /etc/sysconfig/network
+	nisdomainname abc.com
+
+yum install ypbind
+
+vim /etc/yp.conf
+domain  abc.com server  192.168.20.132
+domain  abc.com broadcast
+ypserver        192.168.20.132
+
+
+
+
+vim /etc/nsswitch.conf
+passwd: files nis sss
+shadow: files nis sss
+group: files nis sss
+
+
+now on server 
+
+systemctl status nfs
+
+vim /etc/exports
+/home 192.168.20.0/24(rw)
+
+exportfs -a
+
+showmount -e localhost
+
+on client
+
+showmount -e 192.168.20.10
+
+mount -t nfs 192.168.20.132:/home /home
+
+vi /etc/fstab
+192.168.20.10:/home	/home	nfs	defaults	0 0
+
+_____
+autofs
+
+yum install autofs* -y
+
+vi /etc/auto.master
+/home auto.home (edit and add which dir you want to mount above the +auto.master line)
+
+vim /etc/auto.home
+*       -fstype=nfs,rw  192.168.20.132:/home/&
+
+mount -t auto ip:/home	/home
+
+ls /home
+systemctl restart autofs
+systemctl status autofs
+systemctl enable autofs
+
+
+
+
+
+
+

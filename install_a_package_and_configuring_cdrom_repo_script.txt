@@ -1,0 +1,21 @@
+#!/bin/bash
+mkdir /media/cdrom
+mount -t auto /dev/cdrom /media/cdrom &> dev/null
+mkdir /root/repo-files
+cd /etc/yum.repos.d/
+mv *.repo /root/repo-files
+touch cdrom.repo
+echo "[cdromrepo]" > cdrom.repo
+echo "name = cdromrepo" >> cdrom.repo
+echo "baseurl = file:///media/cdrom/" >> cdrom.repo
+echo "enabled = 1" >> cdrom.repo
+echo "gpgcheck = 0" >> cdrom.repo
+yum clean all
+yum update all
+yum install $1 -y
+umount /media/cdrom
+rm -rf /media/cdrom
+rm -f cdrom.repo
+mv /root/repo-files/*.
+rm -rf /root/repo-files
+echo "Installation completed ...... Remove CD/DVD"

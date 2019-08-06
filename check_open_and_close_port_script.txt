@@ -1,0 +1,10 @@
+#!/bin/bash
+read -p "Enter the Port no:"  port
+check=`netstat -lnptu | grep $port &> /dev/null`
+if  [ -z = "$check" ]
+then
+        echo "port not opened"
+
+else
+        echo "port opened"
+fi

@@ -1,0 +1,26 @@
+echo "[repo]" >> /etc/httpd/conf/httpd.conf
+
+
+
+vim /etc/httpd/conf/httpd.conf
+
+<virtualhost 192.168.100.155>
+serveradmin root@192.168.100.155
+documentroot /var/www/html
+directoryindex repo
+<directory "/var/www/html">
+options indexes
+order allow,deny
+allow from all
+</directory>
+</virtualhost>
+
+mkdir /var/www/html/repo
+mkdir /var/www/html/repo/Packages
+
+
+cd /media/cdrom/
+
+rsync -parv Packages/ /var/www/html/repo/Packages/
+
+createrepo -v /var/www/html/repo/Packages/

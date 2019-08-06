@@ -1,0 +1,83 @@
+yum install bind* -y
+vim /etc/hostname
+   ser1.example.com
+init 6
+vim /etc/named.conf
+  options {
+        listen-on port 53 { (enter your serverIP)192.168.131.133; };
+        listen-on-v6 port 53 { ::1; };
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        allow-query     { any; };
+
+vim /etc/named.rfc1912.zones (file will open .. delete all content of file and add below data)
+ 
+ zone "example.com" IN {
+        type master;
+        file "forward.zone";
+        allow-update { none; };
+};
+
+
+zone "241.168.192.in-addr.arpa" IN {
+        type master;
+        file "rev.zone";
+        allow-update { none; };
+};
+
+cd /var/named/
+cp named.localhost forward.zone
+vim forward.zone
+ $TTL 1D
+@       IN SOA  ser1.example.com.       root.ser1.example.com. (
+                                        0       ; serial
+                                        1D      ; refresh
+                                        1H      ; retry
+                                        1W      ; expire
+                                        3H )    ; minimum
+        IN      NS      ser1.example.com.
+        IN      A       192.168.131.133
+ser1    IN      A       192.168.131.133
+www     IN      A       192.168.131.134
+host1   IN      A       192.168.131.135
+
+cp forward.zone reverse.zone
+vim reverse.zone
+ $TTL 1D
+@       IN SOA  ser1.example.com.       root.ser1.example.com. (
+                                        0       ; serial
+                                        1D      ; refresh
+                                        1H      ; retry
+                                        1W      ; expire
+                                        3H )    ; minimum
+@       IN      NS      ser1.example.com.
+        IN      PTR     ser1.exmple.com.
+133     IN      PTR     ser1
+134     IN      PTR     www 
+135     IN      PTR     host1
+
+ls -la
+chown named. forward.zone reverse.zone
+vim /etc/resolv.conf
+
+search example.com
+nameserver  192.168.131.133 (enter your server IP)
+chattr +i /etc/resolv.conf
+systemctl restart network
+systemctl restart NetworkManager
+ip a
+systemctl restart named.service
+nslookup www.example.com
+
+
+yum install bind-chroot -y 
+systemctl stop named
+systemctl disable named
+
+
+
+
+
+

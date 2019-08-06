@@ -1,0 +1,142 @@
+Tar
+
+first destination , then the file that has to be compressed and then the source
+
+mkdir /test
+tar -cvf /test/etc.tar /etc
+        ^          ^       ^             ^
+         1          2      3              4
+
+1= compress verbose forcefully
+2=path of destination directory
+3=name.tar 
+4=file/directory to be compressed
+
+****************************************************************************
+
+du -h /etc
+Output : 37M     /etc                   ---------------->  original file
+ 
+du -h /test/etc.tar
+output : 32M       /test/etc.tar        ---------------->  after tar
+
+gzip /test/etc.tar
+[root@localhost /]# du -h /test/etc.tar.gz       ------> gunzip , compression
+11M	/test/etc.tar.gz
+
+
+scp /tar/etc.tar.gz ip:/root
+
+
+gunzip /tar/etc.tar.gz           ---------------> to Gunzip
+du -h /tar/etc.tar
+Output : 32M	/tar/etc.tar
+
+
+
+
+****************************************************************************
+
+top , htop , vmstat ---- commands to know the RAM of a system
+
+output of top :
+
+PID 
+USER
+PR
+NI
+VIRT
+RES
+SHR
+S
+%CPU
+%MEM
+TIME+
+COMMAND
+
+****************************************************************************
+
+Foreground and background process 
+
+fg <pid>          -----------> to bring a process to foreground
+
+use &                                     to bring a process to background
+ls -r
+ls -r &
+
+*****************************************************************************
+
+pstree : used to know the origin of a process
+
+in rh6 , the root process is init
+in rh7, the root process is systemd
+
+****************************************************************************
+
+ps 
+The ps command gives the running process of the present terminal and present commmand
+[root@localhost /]# ps
+   PID TTY          TIME CMD
+ 16181 pts/0    00:00:00 bash
+ 48349 pts/0    00:00:00 cat
+ 48699 pts/0    00:00:00 top
+ 48880 pts/0    00:00:00 top
+ 48976 pts/0    00:00:00 ps
+
+
+ps -a 
+      -u <username>
+      - u root
+      - x  ------> to see which processes are attached with some terminal and which are not
+                            the process which are showing "?" are not attached to any terminal
+      -aux ------->
+ps -elf
+
+****************************************************************************
+
+Signals in linux
+kill -l     
+1 for reloading
+9 for killing process
+15 for terminating the process
+20 for stopping a process
+and some more................
+
+****************************************************************************
+
+priority
+a nice value (ranging from -20 to 19) sets the priority of a job, also called linux niceness scale
+
+nice -n<range from -20 to 19> <command>   -----> to set priority
+
+nice -n 5 <command>  --------------> to check the priority
+
+renice <-20 to 19><PID>
+
+****************************************************************************
+
+
+[root@localhost /]# sed '/^$/d' top
+[root@localhost /]# top | awk '{print $4,$13}'
+
+****************************************************************************
+
+mkdir /mnt/cdrom
+[root@localhost /]# alias a='cd /mnt/cdrom/'
+[root@localhost /]# a
+[root@localhost cdrom]# 
+
+check how to make alias permanent  (hint bashrc)
+
+****************************************************************************
+
+
+
+
+
+
+
+
+
+
+

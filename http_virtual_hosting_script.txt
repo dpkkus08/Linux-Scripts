@@ -1,0 +1,52 @@
+#!/bin/bash
+site1='acts.cdac.com'
+site2='ditiss.cdac.com'
+dir1='acts'
+dir2='ditiss'
+eth=`nmcli device | awk '/ethernet/ {print $1}'` &> /dev/null
+ifup $eth &> /dev/null
+ip=`ifconfig $eth | grep netmask | awk '{print $2}'` &> /dev/null
+hostname=webser.cdac.com &> /dev/null
+
+iptables -F
+systemctl stop firewalld
+setenforce 0
+echo "$ip $hostname" >> /etc/hosts
+echo "$ip $site1" >> /etc/hosts
+echo "$ip $site2" >> /etc/hosts
+yum install http* -y &> /dev/null
+yum start httpd
+yum enable httpd &> /dev/null
+cd /etc/httpd/conf.d
+touch vhost.conf
+
+echo "<VirtualHost *:80>" >> /etc/httpd/conf.d/vhost.conf
+echo "    ServerAdmin root@acts.cdac.com" >> /etc/httpd/conf.d/vhost.conf
+echo "    DocumentRoot "/var/www/acts"" >> /etc/httpd/conf.d/vhost.conf
+echo "    ServerName acts.cdac.com " >> /etc/httpd/conf.d/vhost.conf
+echo "    ErrorLog "/var/log/httpd/acts.cdac.com-error_log"" >> /etc/httpd/conf.d/vhost.conf
+echo "    CustomLog "/var/log/httpd/acts.cdac.com-access_log" common" >> /etc/httpd/conf.d/vhost.
+conf
+echo "</VirtualHost>" >> /etc/httpd/conf.d/vhost.conf
+
+echo "<VirtualHost *:80>" >> /etc/httpd/conf.d/vhost.conf
+echo "   ServerAdmin root@ditiss.cdac.com " >> /etc/httpd/conf.d/vhost.conf
+echo "    DocumentRoot "/var/www/ditiss"" >> /etc/httpd/conf.d/vhost.conf
+echo "    ServerName ditiss.cdac.com ">> /etc/httpd/conf.d/vhost.conf
+echo "    ErrorLog "/var/log/httpd/ditiss.cdac.com-error_log"" >> /etc/httpd/conf.d/vhost.conf
+echo "    CustomLog "/var/log/httpd/ditiss.cdac.com-access_log" common " >> /etc/httpd/conf.d/vho
+st.conf
+echo "</VirtualHost> ">> /etc/httpd/conf.d/vhost.conf
+
+mkdir /var/www/acts
+touch index.html
+echo "welcome to acts" > /var/www/acts/index.html
+
+mkdir /var/www/ditiss
+touch index.html
+echo "welcome to ditiss" > /var/www/ditiss/index.html
+
+
+systemctl restart httpd 
+echo "configuration is completed"
+

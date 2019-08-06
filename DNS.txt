@@ -1,0 +1,88 @@
+#!/bin/bash
+############# AUTOMATED DNS ####################
+yum -y install bind* &> /dev/null
+read -p "Enter the hostname: " hostname
+b=$(echo "$hostname" | cut -d'.' -f1)
+a=$(echo "$hostname" | cut -d'.' -f2,3)
+read -p "Enter the $b IP: " a1ip
+f=$(echo "$a1ip" | cut -d'.' -f4)
+echo "$a1ip" | awk -F. '{print$3,$2,$1}' > file
+sed -i 's/ /./g' file1
+z=$(cat file1)
+read -p "Enter the forward lookup zone file: " flz
+read -p "Enter the reverse lookup zone file: " rlz
+cd /etc/sysconfig
+echo -e "\nNETWORKING=yes" > network
+echo  "HOSTNAME=$hostname" >> network
+cd /etc
+echo -e "$a1ip\t$hostname" >> hosts
+sed -i 's/127.0.0.1;/127.0.0.1; '$a1ip';/' named.conf
+sed -i 's/localhost;/any;/' named.conf
+echo -e "\nzone \"$a\" IN {" >> /etc/named.rfc1912.zones
+echo -e "\ttype master;" >> /etc/named.rfc1912.zones
+echo -e "\tfile \"$flz\";" >> /etc/named.rfc1912.zones
+echo -e "\tallow-update { none; };" >> /etc/named.rfc1912.zones
+echo "};" >> /etc/named.rfc1912.zones
+echo -e "\nzone \"$z.in-addr.arpa\" IN {" >> /etc/named.rfc1912.zones
+echo -e "\ttype master;" >> /etc/named.rfc1912.zones
+echo -e "\tfile \"$rlz\";" >> /etc/named.rfc1912.zones
+echo -e "\tallow-update { none; };" >> /etc/named.rfc1912.zones
+echo "};" >> /etc/named.rfc1912.zones
+cd /var/named
+echo "\$TTL 1D" > ${flz}
+read -p "Are there more admins to this domain? " ans
+echo -e "@\tIN SOA\t$hostname. root.$a. (" >> ${flz}
+echo -e "\t\t\t\t\t0\t; serial" >> ${flz}
+echo -e "\t\t\t\t\t1D\t; refresh" >> ${flz}
+echo -e "\t\t\t\t\t1H\t; retry" >> ${flz}
+echo -e "\t\t\t\t\t1W\t; expire" >> ${flz}
+echo -e "\t\t\t\t\t3H )\t; minimum" >> ${flz}
+echo -e "\tNS\t$hostname." >> ${flz}
+echo -e "$b\tA\t$a1ip" >> ${flz}
+if [[ $ans == "y" ]]; then
+        read -p "Enter new admin's hostname: " a2host
+        c=$(echo "$a2host" | cut -d'.' -f1)
+        read -p "Enter new admin's ip: " a2ip
+        g=$(echo "$a2ip" | cut -d'.' -f4)
+        echo -e "$c\tA\t$a2ip" >> ${flz}
+        echo -e "\tA\t127.0.0.1" >> ${flz}
+        echo -e "\tAAAA\t::1" >> ${flz}
+else
+        echo -e "\tA\t127.0.0.1" >> ${flz}
+        echo -e "\tAAAA\t::1" >> ${flz}
+fi
+echo "\$TTL 1D" > ${rlz}
+echo -e "@\tIN SOA\t$hostname. root.$a. (" >> ${rlz}
+echo -e "\t\t\t\t\t0\t; serial" >> ${rlz}
+echo -e "\t\t\t\t\t1D\t; refresh" >> ${rlz}
+echo -e "\t\t\t\t\t1H\t; retry" >> ${rlz}
+echo -e "\t\t\t\t\t1W\t; expire" >> ${rlz}
+echo -e "\t\t\t\t\t3H )\t; minimum" >> ${rlz}
+echo -e "\tNS\t$hostname." >> ${rlz}
+echo -e "$b\tA\t$a1ip" >> ${rlz}
+echo -e "$f\tPTR\t$hostname" >> ${rlz}
+if [[ $ans == "y" ]]; then
+        echo -e "$g\tPTR\t$a2host" >> ${rlz}
+        echo -e "\tA\t127.0.0.1" >> ${rlz}
+        echo -e "\tAAAA\t::1" >> ${rlz}
+else
+        echo -e "\tA\t127.0.0.1" >> ${rlz}
+        echo -e "\tAAAA\t::1" >> ${rlz}
+fi
+named-checkzone $a /var/named/${flz} &> /dev/null
+d=$(echo "$?")
+if [[ $d == "0" ]]; then
+        echo "Zone files are consistent, performing the further actions!"
+        echo "search $a" >> /etc/resolv.conf
+        echo "nameserver $a1ip" >> /etc/resolv.conf
+        systemctl restart named &> /dev/null
+else
+        echo "Zone files are inconsistent, please check the provided data."
+fi
+systemctl status named &> /dev/null
+e=$(echo "$?")
+if [[ $e == "0" ]]; then
+        echo "DNS service successfully started!"
+else
+        echo "DNS service not started."
+fi

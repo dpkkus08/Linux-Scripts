@@ -1,0 +1,46 @@
+eth=`nmcli device | awk '/ethernet/ {print $1}'` &> /dev/null
+ifup $eth &> /dev/null
+ip=`ifconfig $eth | grep netmask | awk '{print $2}'` &> /dev/null
+nm=`ifconfig ens33| grep netmask | awk '{print $4}'` &> /dev/null
+proc=`cat /proc/cpuinfo  | grep -E "processor" | wc -l`
+ram=`free -h | grep "Mem" | awk '{print $2}'`
+swap=`free -h | grep "Swap" | awk '{print $2}'`
+hdd=`df -h --output=size --total | awk 'END {print $1}'`
+h=`hostname`
+echo "hostname: $h"
+echo "IP: $ip"
+echo "Netmask: $nm"
+echo "Number Of Processor: $proc"
+echo "Total RAM: $ram MB"
+echo "Total HDD: $hdd MB"
+
+
+hdd=`df -h --total | grep "total" | awk '{print $1}'`
+proc=`cat /proc/cpuinfo  | awk '/processor/ {print $0}' | wc -l'
+
+
+
+
+
+
+______________________________________________________________________
+eth=`nmcli device | awk '/ethernet/ {print $1}'` &> /dev/null
+ifup $eth &> /dev/null
+ip=`ifconfig $eth | grep netmask | awk '{print $2}'` &> /dev/null
+nm=`ifconfig ens33| grep netmask | awk '{print $4}'` &> /dev/null
+proc=`cat /proc/cpuinfo  | awk '/processor/ {print $3}' | wc -l'
+ram=`cat /proc/meminfo  | awk '/MemTotal/ {print $2, $3}'' 
+hdd=`df -h | awk '/\mapper/ {print $2}'`
+h=`hostname`
+echo "hostname: $h"
+echo "IP: $ip"
+echo "Netmask: $nm"
+echo "Number Of Processor: $proc"
+echo "Total RAM: $ram"
+echo "Total HDD: $hdd"
+
+cat /proc/cpuinfo  | grep -E "processor" | wc -l
+
+
+
+

@@ -1,0 +1,12 @@
+echo "Changing Hostname"
+
+	read -p "Enter your hostname: " -r primary_domain
+
+	cat <<-EOF > /etc/hosts
+	127.0.1.1 $primary_domain $primary_domain
+	127.0.0.1 localhost
+	EOF
+
+	cat <<-EOF > /etc/hostname
+	$primary_domain
+	EOF

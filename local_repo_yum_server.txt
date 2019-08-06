@@ -1,0 +1,27 @@
+#!/bin/bash
+mkdir /media/cdrom
+mount -t auto /dev/cdrom /media/cdrom &> /dev/null
+mkdir /root/repo-files
+mkdir /localrepo
+cd /media/cdrom/Packages/
+cp -rv * /localrepo
+
+cd /localrepo
+createrepo -v .
+
+cd /etc/yum.repos.d
+mv *.repo /root/repo-files
+touch local.repo
+
+echo "[repo]" >> local.repo
+echo "name = repo" >> local.repo
+echo "baseurl = "file:///localrepo/"" >> local.repo
+echo "gpgcheck = 0" >> local.repo
+echo "enabled = 1" >> local.repo
+
+yum clean all
+yum update
+
+umount /media/cdrom
+rm -rf /media/cdrom
+

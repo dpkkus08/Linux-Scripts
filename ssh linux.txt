@@ -1,0 +1,79 @@
+** all commands on  [root@host~]
+
+on  pc1
+
+vim  /etc/sysconfig/network-scripts/ifcfg-ens33
+
+//BOOOTPROT0= none            (dhcp to none)
+//ONBOOT = yes
+//IPADDR= 
+//PREFIX=..............8/16/24mask
+//GATEWAY=
+
+ifdown ens33
+ifup ens33
+ifconfig ..........(to check)
+
+pwd ............make sure you're in /home
+ls -all..........you won't find .ssh directory
+ssh pc2's ip
+ipconfig ens33 .........(should show the ip address of pc 2)
+exit
+ls - all
+cd .ssh
+ls ............known_hosts
+cat known_hosts ..........(should show ip and key of pc 2)
+logout 
+
+vim <filename>
+mv <filename> .. /        -------(move the file to parent /root)
+scp <filename> pc2 ip address:/root 
+
+ssh-keygen -t rsa   ------------- to automate ssh without having to type password for every ssh connection
+//press enter for all prompts
+cd .ssh
+ls   (you'll see id_rsa )
+ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.2 (type from /home ... cd ~)
+ifconfig ens33 ...... (we're still on pc1)
+ssh 192.168.2.5  ..........(we make ssh connection with pc2 without having to type the password)
+exit
+
+
+*******************************************************
+
+on pc 2
+
+vim  /etc/sysconfig/network-scripts/ifcfg-ens33
+
+//BOOOTPROT0= none            (dhcp to none)
+//ONBOOT = yes
+//IPADDR=
+//PREFIX=..............mask
+//GATEWAY=
+
+ifdown ens33
+ifup ens33
+ifconfig ..........(to check)
+//ping the other pc
+
+ssh pc1's ip
+ipconfig ens33 .........(should show the ip address of pc 1)
+exit
+ls -all............ see if you find .ssh directory of pc1 which is generated only after ssh connection is made only on pc2 , not of pc 1
+cd .ssh
+ls........................(known_hosts)
+cat known_hosts..........(should show ip and key of pc 1)
+
+
+
+cd .ssh
+ls  ............................(authorized_keys know_hosts)
+cat authorized_keys
+ssh 192.168.1.1    ............(we try ssh connection with pc1 but have to type the password)
+ssh-keygen
+//press enter for all prompts
+ls .ssh .......(auth)
+ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.1 (type from /home ... cd ~)
+
+******************************************************************************************************************************
+

@@ -1,0 +1,80 @@
+DHCP 
+
+On PC1
+
+Assign IP
+
+rpm -qa dhcp*
+mkdir /mnt/cdrom
+mount -t auto /dev/cdrom /mnt/cdrom
+cd /mnt/cdrom/Packages/
+ls dhcp*
+rpm -ivh dhcp <tab>
+cd /etc/dhcp
+ls ---------<you'll find 3 dhcp related files>
+pwd
+cat dhcp.conf 
+##
+ #### see /usr/share/doc/dhcp*/dhcp.conf.example
+##
+cd /usr/share/doc/dhcp-4<tab>
+ls -----><you'll find dhcp related files , we need dhcpd.conf.example>
+pwd
+
+vim dhcpd.conf.example
+//////
+just a format(example) for reference
+//////
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+cd /etc/dhcp
+vi dhcpd.conf
+////
+
+default-lease-time 600;
+max-lease-time 7200;
+
+subnet 192.168.1.0 netmask 255.255.255.0 {
+	range 192.168.1.100 192.168.1.150;
+	option routers 192.168.1.254;
+	option domain-name-servers 192.168.1.1;               ----------> (server's ip address)
+}
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+systemctl start dhcpd ---------------------->(d=daemon)
+systemctl status dhcpd
+
+journalctl -xe  ----------------(use only in case of an error)
+tail -20 /var/log/messages | less  --------------(will show last 20 error-logs)
+
+``````````````````````````      :set nu  ````````````````` this commands numbers the lines in vi editor
+                                        /var/log/messages  ````` this file contains all linux logs
+
+vi dhcpd.conf
+/////
+host comp1 {
+                      hardware ethernet <00:00:00:00:00:00> ;
+	 fixed-address 192.168.1.2;        ------------> (fixed IP assigned to client)
+}
+/////////
+
+systemctl restart dhcpd
+systemctl status dhcpd
+
+cd /var
+ls
+cd  lib/
+ls
+cd dhcpd
+pwd ----------(/var/lib/dhcpd)
+cat dhcpd.leases
+
+
+**********************************************************************************
+
+On PC2
+make sure dhcp is ON 
+
+

@@ -1,0 +1,45 @@
+******* sudo stands for "substitute user do" or "super user do" . The file  ----> /etc/sudoers has the rules that users have to follow 
+                 when using sudo command . Advantages  -i) limited user privilege ii) logs of actions performed by users  
+                 All commands performed by sudo users will be stored in     ---->/var/log/secure  
+******* Root ALL=(ALL) ALL --> This line means that the user Tom can execute from ALL terminals , acting as ALL (any) users and run
+                  ALL(any) command.
+
+********************************************************************************************************************
+
+useradd tom
+passwd tom 
+su - tom
+#vim /etc/sudoers    OR     visudo
+
+CASE 1 : to make tom the admin 
+
+*******************************************************************************************************************
+           * tom	ALL=(ALL)		ALL  ----------->(/bin/mount     if specifically asked to allow mount/umount)
+            *
+	wq!
+*******************************************************************************************************************
+
+So, now Tom will be able to run any commands using "sudo"
+
+CASE 2 : allowing Tom to create user and password
+
+*******************************************************************************************************************
+ 
+   * tom		ALL=(ALL)		/usr/sbin/useradd,/usr/bin/passwd
+     *
+	wq!
+*******************************************************************************************************************
+
+CASE 3 : allowing Tom to login without password 
+
+*******************************************************************************************************************
+ 
+   * tom		ALL=(ALL)		/usr/sbin/useradd,/usr/bin/passwd          NOPASSWD: ALL
+     *
+	wq!
+*******************************************************************************************************************
+
+Now, Tom will be able to create user and password using "sudo"
+-> sudo useradd abc
+     sudo passwd abc
+note : which fdisk , which parted

@@ -1,0 +1,35 @@
+sed -n 's/DAC/Ditiss/p' <filename> (p=print , replaces first instance of every line DAC <->DITISS )
+
+sed -n 's/DAC/Ditiss/g' <filename>   (g=global , substitutes ALL instances of DAC with DITISS)
+
+sed -n 's/DAC/Ditiss/pg' <filename>
+
+sed -n 's2i\DAC is good' <filename>     inserts DAC is good in 2 line (2=line, i= insert)
+
+sed -n 's3a\DAC is good' <filename>    appends DAC is good after erd line , but the above comman must be implemented first !!! (a=append)
+
+sed -n 's4c\DAC is good' <filename>    replaces whatever data there was on 4th line with DAC is good (c=change)
+
+sed -i 's/3128/8080' good' <filename>  replaces the number 3128 with 8080
+
+sed -i 's/test/test123/' <filename> replaces the number test with test123
+
+DAC is pg cour
+
+abc
+
+def
+
+******************************************************************************************************************
+
+https://www.geeksforgeeks.org/sed-command-in-linux-unix-with-examples/
+
+https://www.tecmint.com/linux-sed-command-tips-tricks/
+
+https://www.fastwebhost.in/blog/how-to-use-sed-command-in-unix-with-examples/
+
+https://www.geeksforgeeks.org/sed-command-linux-set-2/
+
+
+
+awk -F ' ' '{if ($3>=500) prinff$}'

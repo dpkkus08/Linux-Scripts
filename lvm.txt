@@ -1,0 +1,71 @@
+#Add a new vhdd
+lsblk
+fdisk -l
+ls /sys/class/scsi_host/
+echo "- - -" > /sys/class/scsi_host/host0/scan
+echo "- - -" > /sys/class/scsi_host/host1/scan
+echo "- - -" > /sys/class/scsi_host/host2/scan
+fdisk -l
+ls /sys/class/scsi_host/
+echo "- - -" > /sys/class/scsi_host/host0/scan
+echo "- - -" > /sys/class/scsi_host/host1/scan
+echo "- - -" > /sys/class/scsi_host/host2/scan
+fdisk -l
+lsblk
+
+creating  LVM 
+
+fdisk /dev/sdb
+
+:n
+:p
+:
+:
+:+19G (enter the max size)
+:t
+:L
+:8e
+:p
+:w
+
+fdisk -l | grep /dev/sdb1
+
+lsblk
+pvcreate /dev/sdb1
+vgdisplay
+vgcreate -s 8M /dev/vg00-ditiss /dev/sdb1 ## -s (block size )
+lsblk
+vgdisplay
+lvcreate -L 12G -n lab1 /dev/vg00-ditiss  ## -L (length)  and ## lvcreate -l 12G -n (if no of block defiend)
+mkfs.ext4  /dev/vg00-ditiss/lab1
+mkdir /lv1
+
+vim /etc/fstab
+/dev/vg00-ditiss/lab1   /lv1    ext4    defaults        0 0
+
+blkid
+mount -a
+
+
+extend the size 
+----------------
+umount /lv1/
+e2fsck -f /dev/vg00-ditiss/lab1
+lvextend -l +5G /dev/vg00-ditiss/lab1
+lvextend -L +5G /dev/vg00-ditiss/lab1
+resize2fs /dev/vg00-ditiss/lab1
+mount -a
+df -h
+
+
+--------------------
+reduce (shrink) size
+=================
+
+umount /lv1/
+e2fsck -f /dev/vg00-ditiss/lab1
+resize2fs /dev/vg00-ditiss/lab1 13G
+lvreduce -L 13G /dev/vg00-ditiss/lab1
+press y
+mount -a
+df -h

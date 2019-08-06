@@ -1,0 +1,5 @@
+#!/bin/bash
+yum -y install yp* &> /dev/null
+read -p "Enter the domain name for your NIS Client: " domain
+nisdomainname $domain
+echo -e "\nnisdomainname $domain" > /etc/sysconfig/network

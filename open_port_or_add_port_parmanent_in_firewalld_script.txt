@@ -1,0 +1,7 @@
+#!/bin/bash
+read -p "enter port number to open port in firewall :" port
+read -p "enter port protocol (tcp or udp) :" type
+firewall-cmd --zone=public --permanent --add-port=$port/$type &> /dev/null
+echo "Port opend in firewall successfully"
+echo "open ports listed below"
+firewall-cmd --zone=public --permanent --list-ports

@@ -1,0 +1,32 @@
+yum install samba* -y
+mkdir /share
+vim /etc/samba/smb.conf
+
+[global]
+	change workgroup name ffrom samba to WORKGROUP
+
+and add directory info in the end
+
+[share]
+        comment = testing
+        path = /share
+        writeable = Yes
+        browseable = Yes
+	printable = Yes
+        vaild users = usertest
+
+groupadd samba
+useradd -a -G samba usertest
+passwd usertest
+smbpasswd -a usertest
+chgrp samba /share
+chmod 770 /share
+chcon -R -t smb_share_t /share
+systemctl restart smb
+
+client
+-----------
+
+yum install samba-client
+smbclient //ip/share -u usertest
+

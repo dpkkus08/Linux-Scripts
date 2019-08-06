@@ -1,0 +1,32 @@
+!/bin/bash
+mkdir /mnt/cdrom
+mount -t auto /dev/sr0 /mnt/cdrom
+mkdir /root/repos
+mv /etc/yum.repos.d/* /root/repos
+cd /etc/yum.repos.d
+touch cdrepo.repo
+echo "[cdrom]" >> cdrepo.repo
+echo "name="CD REPO"" >> cdrepo.repo
+echo "baseurl=file:///mnt/cdrom"  >> cdrepo.repo
+echo "enabled=1" >> cdrepo.repo
+echo "gpgcheck=0"  >> cdrepo.repo
+yum clean all
+yum install dhcp
+echo -e "DHCP Installation Complete\n\n"
+read -p "Enter Range giving space: " startip endip
+read -p "Enter gateway: " gateway
+read -p "Enter DNS: " dns
+cd /etc/dhcp
+mv dhcpd.conf dhcpdold.conf
+echo "default-lease-time 600;max-lease-time 7200;" >> dhcpd.conf
+echo "subnet 192.168.10.0 netmask 255.255.255.0 {" >> dhcpd.conf
+echo "range $startip $endip;" >> dhcpd.conf
+echo "option routers $gateway;" >> dhcpd.conf
+echo "option domain-name-servers $dns;}">> dhcpd.conf
+
+echo -e "\n\nApplied changes in configuration of DHCP\n"
+cat dhcpd.conf
+echo "Press any key to start dhcp service"
+read
+systemctl start dhcpd.service
+systemctl status dhcpd.service

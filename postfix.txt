@@ -1,0 +1,55 @@
+service iptables stop
+service ip6tables stop
+chkconfig iptables off
+chkconfig ip6tables off
+vi /etc/selinux/config
+	Selinux=disabled
+yum install postfix
+vi etc/postfix/main.cf
+	line75	remove/uncomment # set hostname = (ur hostname.domainname)
+	line83	remove # set mydomain =	(ur domain name)
+	line98	remove # set myorgin  = $myhostname
+	line113	remove # set inet_interface = all
+	line116	Add/comment   # set inet_interfaces = localhost 
+	line119	remove # set inet_protocols = all
+	line164	Add    # set mydestination = $myhostname, localhost.$mydomain, localhost
+	line165	Remove # set mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
+	line264 Remove # set mynetworks = 192.168.2.0/24 , 127.0.0.0/8
+	line419 Remove # set home_mailbox = Maildir/
+	save
+service postfix restart
+chkconfig postfix on
+yum install telnet
+	y/n   = y
+telnet localhost smtp
+  result 
+  connected to localhost.
+  escape character is .^]'.
+  220 hostname.domain.com ESMTP Postfix
+ehlo localhost
+  result
+  nos-ipeline
+  nos-pvrfy
+  nos-etrn
+mail from:root(user name)
+  result rcpt
+  250 2.1.0 ok
+rcpt to:sundar(user name)
+  result
+  250 2.1.5 ok
+data
+  result 
+  354 End data with <CR><LF>.<CR><LF>
+"this is your brother"
+.
+250 2.0.0 ok: queued as alpha numeric
+quit
+221 2.0.0 Bye
+connection closed by forgien host.
+
+# to check mail
+cd /home/sun/Maildir/new/
+cat filename
+Output shows the content of your id
+.
+

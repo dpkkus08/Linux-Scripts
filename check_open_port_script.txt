@@ -1,0 +1,16 @@
+#!/bin/bash
+
+read -p "Enter the port number to access:" port
+
+check=`netstat -pnltu | grep  "$port" 2> /dev/null`
+
+
+#if [ $? = 0 ]
+if  [ -z "$check" ];
+then
+        echo "Port not opened"
+
+else
+        echo "port opened"
+fi
+

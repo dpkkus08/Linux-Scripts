@@ -1,0 +1,8 @@
+cd .ssh
+cat knownhosts
+
+cd /root/.ssh
+ssh-keygen -t name
+cd /root/.ssh
+ssh-copy-id -i /root/.ssh/keyname root@clientip 
+

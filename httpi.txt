@@ -1,0 +1,181 @@
+rpm -qa httpd*
+ls httpd*
+
+rpm -ivh httpd-2.4....<tab>
+yum localinstall httpd-2<tab>
+yum -y install httpd 
+
+mkdir /scripts/
+vim install.sh
+///
+#!/bin/bash
+
+mkdir /mnt/cd-rom
+mount -t auto /dev/cdrom /mnt/cd-rom &> /dev/null
+mkdir /root/repos
+cd /etc/yum.repos.d
+mv *.repo  /root/repos
+touch cdrom.repo
+echo "[cdrom]" > cdrom.repo
+echo "name=cdrom" >> cdrom.repo
+echo "baseurl=file:///mnt/cd-rom" >> cdrom.repo
+echo "enabled=1" >> cdrom.repo
+echo "gpgcheck=0" >> cdrom.repo
+yum clean all
+yum install $1 -y
+rm -rf cdrom.repocd 
+mv /root/repos/*.repo /etc/yum.repos.d
+rm -rf /root/repos
+umount /mnt/cd-rom
+rm -rf /mnt/cd-rom
+echo "Installation Complete..........Remove CD"
+
+////////////
+
+chmod 777 install.sh
+ls /etc/yum.repos.d  --------> (should contain files)
+ls /root/repos          -----------> (does not exist yet)
+
+./install.sh httpd
+
+ls /etc/yum.repos.d  --------> (should contain files)
+ls /root/repos          -----------> (does not exist yet)
+
+8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
+
+systemctl start httpd
+
+go to browser , type 'localhost'  ------testing page should pop up
+cd /var/www/html
+ls
+
+vim index.html
+///<html>
+      <head><h2>Welcome to Apache website</h2></head>
+      </html>
+///
+
+go to browser , type local host ---------- Welcome to Apache website
+
+cd /etc/httpd
+ls
+cd conf
+ls
+pwd
+
+vi http.conf
+/// read only text ///
+
+ls cd ..
+ls cd conf.modules
+
+
+
+
+cd /var/www/html
+ls
+mkdir website1
+mkdir website2
+mkdir website3
+cp index.html website1
+cp index.html website2
+cp index.html website3
+
+cd website1
+vim index.html
+///<html>
+      <head><h2>Welcome to Apache website</h2></head>
+      </html>
+///
+
+cd ../website2
+index.html
+///<html>
+      <head><h2>Welcome to dbda website</h2></head>
+      </html>
+///
+
+cd ../website3
+index.html
+///<html>
+      <head><h2>Welcome to ditiss website</h2></head>
+      </html>
+///
+
+chown -R apache:apache /var/www/html/website1
+chown -R apache:apache /var/www/html/website2
+chown -R apache:apache /var/www/html/website3
+
+cd
+cd /etc/httpd/conf.d
+ls
+cd ..
+httpd]#cd  logs
+ls
+mkdir ditiss.com
+mkdir dbda.com
+
+vi virualhosts.conf  
+/// 
+
+NameVirtualHost < serverIP:80 >
+
+<VirtualHost *:80 >
+ServerAdmin	root@ditiss.com
+DocumentRoot	/var/www/html/website1
+ServerName	www.ditiss.com
+ErrorLog		logs/ditiss.com/Error_log
+CustomLog	logs/ditiss.com/Custom_log common
+</VirtualHost>
+
+<VirtualHost *:80 >
+ServerAdmin	root@dbda.com
+DocumentRoot	/var/www/html/website2
+ServerName	www.dbda.com
+ErrorLog		logs/dbda.com/Error_log
+CustomLog	logs/dbda.com/Custom_log common
+</VirtualHost>	
+
+///
+
+
+vim /etc/hosts
+/// <server IP> www.ditiss.com www.dbda.com
+///
+
+ping www.ditiss.com
+ping www.dbda.com
+
+systemctl restart httpd
+Go to Browser -----> www.ditiss.com  
+O/P : Welcome to Apache website
+
+
+**********
+*    tail -20 /var/log/messages | less
+
+*    cd /var/log
+       ls
+************
+
+***************
+(SELinux)
+If everything is right but the website is not running then try
+getenforce-----------------> enforcing
+setenforce 0
+getenforce--------------->Permissive 
+**************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+    

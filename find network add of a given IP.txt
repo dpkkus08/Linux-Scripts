@@ -1,0 +1,12 @@
+# IFS=. read -r o1 o2 o3 o4 <<<192.168.2.1             ...IFS Internal Field Seperator
+# IFS=. read -r s1 s2 s3 s4 <<<255.255.255.0
+
+# echo $s1
+255
+# echo $s2
+255
+# echo $s4
+0
+
+# echo "The network address is $((o1 & s1)).$(( o2 & s2)).$(( o3 & s3)).$(( o4 & s4))"
+The network address is 192.168.2.0

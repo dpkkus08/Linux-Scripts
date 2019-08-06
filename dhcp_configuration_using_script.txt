@@ -1,0 +1,35 @@
+#!/bin/bash
+
+yum install dhcp* -y &> /dev/null
+
+read -p "Enter sunet network IP: "  nip
+read -p "Enter Netmask IP: "  nm
+read -p "Enter IP-Range's Start IP: "  ip1
+read -p "Enter IP-Range's Last IP: "  ip2
+read -p "Enter Option Routers IP: "  router
+read -p "Enter Broadcast Address IP: "  broadcast
+read -p "Enter option domain-name-servers Name: "  dns
+
+echo "subnet $nip netmask $nm { " >> /etc/dhcp/dhcpd.conf
+echo "  range $ip1 $ip2;" >> /etc/dhcp/dhcpd.conf
+echo "  option domain-name-servers $dns;" >> /etc/dhcp/dhcpd.conf
+echo "  option routers $router;" >> /etc/dhcp/dhcpd.conf
+echo "  option broadcast-address $broadcast;" >> /etc/dhcp/dhcpd.conf
+echo "  default-lease-time 600;" >> /etc/dhcp/dhcpd.conf
+echo "  max-lease-time 7200;" >> /etc/dhcp/dhcpd.conf
+echo "}" >> /etc/dhcp/dhcpd.conf
+
+
+systemctl restart dhcpd
+
+echo "Welcome DHCP Server is configured Successfully"
+
+read -p "Enter hostname for Reservation: " hn
+read -p " Enter IP For Reservation: " ip3
+
+echo "host $hn {" >> /etc/dhcp/dhcpd.conf
+echo "	hardware ethernet ;" >> /etc/dhcp/dhcpd.conf
+echo "	fixed-address $ip3;" >> /etc/dhcp/dhcpd.conf
+echo "}" >> /etc/dhcp/dhcpd.conf
+
+echo "$ip3 has been reserved in DHCP for host $hm"
